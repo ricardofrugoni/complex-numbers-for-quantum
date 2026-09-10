@@ -1,0 +1,3 @@
+-r requirements.txt
+# Backend interativo do Matplotlib no JupyterLab (inclui ipywidgets).
+ipympl>=0.9.5,<0.11

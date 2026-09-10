@@ -135,3 +135,15 @@ Este repositório corresponde ao bloco **B1 — Matemática I: números complexo
 - NumPy — operações e ângulos de números complexos.
 
 Veja referências e observações nos documentos de cada módulo.
+
+## Laboratórios interativos
+
+O [notebook complementar](notebooks/06_laboratorio_interativo.ipynb) oferece sete
+explorações com controles: plano e conjugado, soma, multiplicação de uma grade,
+Euler em 3D, potências, superfície de módulo ao quadrado e amplitudes normalizadas.
+As duas figuras 3D permitem girar a câmera com o mouse.
+
+Consulte o [guia de execução](docs/07_laboratorio_interativo.md) para configurar
+`ipympl` usando `requirements-interactive.txt`. A
+[auditoria e lista de melhorias](docs/AUDITORIA_E_MELHORIAS.md) descreve as
+dependências necessárias e as propostas de mudanças maiores para aprovação.

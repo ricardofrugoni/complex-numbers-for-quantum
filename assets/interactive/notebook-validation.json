@@ -1,0 +1,51 @@
+{
+  "python": "3.13.4 (tags/v3.13.4:8a526ec, Jun  3 2025, 17:46:04) [MSC v.1943 64 bit (AMD64)]",
+  "packages": {
+    "numpy": "2.5.3",
+    "matplotlib": "3.11.1",
+    "jupyterlab": "4.6.3",
+    "pytest": "9.1.1",
+    "ipympl": "0.10.0",
+    "ipywidgets": "8.1.9",
+    "nbclient": "0.11.0",
+    "nbformat": "5.11.1"
+  },
+  "results": [
+    {
+      "notebook": "01_plano_complexo.ipynb",
+      "status": "ok",
+      "code_cells": 1,
+      "widget_views": 0
+    },
+    {
+      "notebook": "02_modulo_argumento.ipynb",
+      "status": "ok",
+      "code_cells": 1,
+      "widget_views": 0
+    },
+    {
+      "notebook": "03_operacoes_geometricas.ipynb",
+      "status": "ok",
+      "code_cells": 1,
+      "widget_views": 0
+    },
+    {
+      "notebook": "04_forma_polar_euler.ipynb",
+      "status": "ok",
+      "code_cells": 1,
+      "widget_views": 0
+    },
+    {
+      "notebook": "05_ponte_para_qubits.ipynb",
+      "status": "ok",
+      "code_cells": 1,
+      "widget_views": 0
+    },
+    {
+      "notebook": "06_laboratorio_interativo.ipynb",
+      "status": "ok",
+      "code_cells": 10,
+      "widget_views": 7
+    }
+  ]
+}
