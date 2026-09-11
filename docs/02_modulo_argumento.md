@@ -1,52 +1,53 @@
-# 2. Módulo e argumento
+# Módulo e argumento: distância e direção
 
-Para
+[← Plano complexo](01_plano_complexo.md) · [Entrada](../README.md) · [Conjugado →](03_conjugado.md)
 
-$$
-z=a+bi,
-$$
+As coordenadas dizem quanto andar em cada eixo. Existe outra descrição igualmente útil: quanto se afastar da origem e em qual direção.
 
-o módulo é
+<a id="modulo"></a>
+## Um triângulo revela o módulo
 
-$$
-|z|=\sqrt{a^2+b^2}.
-$$
+Para $z=a+bi$, as projeções formam um triângulo retângulo:
 
-Geometricamente, $|z|$ é a distância entre a origem e o ponto $(a,b)$.
+$$r=|z|=\sqrt{a^2+b^2}.$$
 
-O argumento $\arg(z)$ é o ângulo entre o eixo real positivo e o vetor associado a $z$.
+![O vetor de z, suas projeções e um círculo de mesmo módulo aparecem juntos no plano.](../assets/interactive/plano.png)
 
-$$
-\theta=\arg(z).
-$$
+No [laboratório](../notebooks/06_laboratorio_interativo.ipynb#plano), escolha $3+4i$. Os catetos medem 3 e 4; a seta mede $\sqrt{9+16}=5$. Todos os pontos do círculo têm esse mesmo módulo. A reflexão $3-4i$, desenhada com outra linha, preserva a distância.
 
-Em código, é preferível calcular o ângulo com uma função equivalente a `atan2(b,a)`, porque ela identifica corretamente o quadrante.
+<a id="argumento"></a>
+## O arco revela o argumento
 
-## Exemplo
+Para $z\ne0$, um argumento $\theta$ mede a rotação do eixo real positivo até o vetor. O sentido anti-horário é positivo. Em Python, `cmath.phase(z)` equivale a `atan2(b, a)` e considera o quadrante corretamente; `atan(b/a)` sozinho perde essa informação.
 
-Para $z=3+4i$:
+```python
+import cmath
+import math
 
-$$
-|z|=5.
-$$
+z = 3 + 4j
+theta = cmath.phase(z) if z != 0 else None
+print(abs(z))  # 5.0
+print(math.degrees(theta) if theta is not None else 'indefinido')
+# Aproximadamente 53.13 graus
+```
 
-O argumento é
+O ângulo $\theta+2\pi$ aponta na mesma direção que $\theta$. Um **argumento principal** escolhe um representante; `cmath.phase` retorna valores entre $-\pi$ e $\pi$, com uma convenção que distingue zeros com sinal no corte do eixo real negativo. O [notebook](../notebooks/02_modulo_argumento.ipynb) compara essas direções.
 
-$$
-\theta=\operatorname{atan2}(4,3).
-$$
+> **Algo contraintuitivo**
+> Um ponto pode se mover continuamente e o número que representa seu argumento principal saltar de perto de $180°$ para perto de $-180°$. O salto está na escolha do ângulo, não no percurso.
 
-## Interpretação
+## Observe a origem
 
-- módulo → tamanho;
-- argumento → direção/fase.
+Em $z=0$, o módulo é zero e o argumento matemático é indefinido: uma seta sem comprimento não escolhe direção. Bibliotecas podem devolver um ângulo por convenção numérica. Os laboratórios sinalizam essa diferença em vez de atribuir uma fase à origem.
 
-## Conexão futura
+Compare $1+i$ e $-1-i$: ambos têm módulo $\sqrt2$, mas apontam em direções opostas. **Mover a direção sem mudar o módulo** será a base das rotações e dos fatores de fase.
 
-Em computação quântica, amplitudes complexas possuem magnitude e fase. Probabilidades dependem do módulo ao quadrado; fases tornam-se essenciais para interferência.
+## Onde isso reaparece em computação quântica?
 
-## Exercícios
+Para amplitudes de um estado normalizado em uma base ortonormal, o módulo ao quadrado fornece probabilidades de medição. A fase relativa continua relevante para operações posteriores. Um $|z|^2$ arbitrário, como $|3+4i|^2=25$, não é uma probabilidade.
 
-1. Calcule módulo e argumento de $1+i$.
-2. Compare $1+i$ e $-1-i$.
-3. Dois números podem ter o mesmo módulo e argumentos diferentes?
+## Para aprofundar
+
+[OpenStax — forma polar](https://openstax.org/books/algebra-and-trigonometry-2e/pages/10-5-polar-form-of-complex-numbers) · [Python — `phase`](https://docs.python.org/3/library/cmath.html#cmath.phase) · [IBM — amplitudes e normalização](https://quantum.cloud.ibm.com/learning/en/courses/basics-of-quantum-information/single-systems/quantum-information).
+
+**[Continue: o espelho de um número →](03_conjugado.md)**

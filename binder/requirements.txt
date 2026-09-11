@@ -1,0 +1,2 @@
+# Inclui os widgets, além das dependências básicas do livro.
+-r ../requirements-interactive.txt

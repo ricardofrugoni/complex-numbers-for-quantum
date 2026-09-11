@@ -1,4 +1,4 @@
-"""Executa notebooks em kernels isolados, sem modificar os arquivos originais."""
+"""Executa notebooks isolados; opcionalmente salva saídas dos notebooks estáticos."""
 
 import argparse
 import json
@@ -16,6 +16,8 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, help="JSON opcional com os resultados da execução.")
+    parser.add_argument("--save-static", action="store_true",
+                        help="Salva as saídas somente dos notebooks sem widgets para leitura no GitHub.")
     args = parser.parse_args()
     results = []
     for path in sorted((ROOT / "notebooks").glob("*.ipynb")):
@@ -33,8 +35,12 @@ def main():
             widget_views = sum("application/vnd.jupyter.widget-view+json" in output.get("data", {})
                                for cell in notebook.cells if cell.cell_type == "code"
                                for output in cell.get("outputs", []))
-            if path.name == "06_laboratorio_interativo.ipynb" and widget_views < 7:
-                raise RuntimeError("O laboratório não produziu as sete saídas interativas esperadas.")
+            expected = {"06_laboratorio_interativo.ipynb": 7,
+                        "07_raizes_ondas_fourier.ipynb": 3}.get(path.name, 0)
+            if widget_views < expected:
+                raise RuntimeError(f"{path.name}: esperadas {expected} saídas interativas; obtidas {widget_views}.")
+            if args.save_static and widget_views == 0:
+                nbformat.write(notebook, path)
             results.append({"notebook": path.name, "status": "ok", "code_cells": count,
                             "widget_views": widget_views})
             print(f"OK: {path.name} ({count} células de código)", flush=True)

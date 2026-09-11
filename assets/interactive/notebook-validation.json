@@ -14,31 +14,31 @@
     {
       "notebook": "01_plano_complexo.ipynb",
       "status": "ok",
-      "code_cells": 1,
+      "code_cells": 2,
       "widget_views": 0
     },
     {
       "notebook": "02_modulo_argumento.ipynb",
       "status": "ok",
-      "code_cells": 1,
+      "code_cells": 2,
       "widget_views": 0
     },
     {
       "notebook": "03_operacoes_geometricas.ipynb",
       "status": "ok",
-      "code_cells": 1,
+      "code_cells": 2,
       "widget_views": 0
     },
     {
       "notebook": "04_forma_polar_euler.ipynb",
       "status": "ok",
-      "code_cells": 1,
+      "code_cells": 2,
       "widget_views": 0
     },
     {
       "notebook": "05_ponte_para_qubits.ipynb",
       "status": "ok",
-      "code_cells": 1,
+      "code_cells": 3,
       "widget_views": 0
     },
     {
@@ -46,6 +46,12 @@
       "status": "ok",
       "code_cells": 10,
       "widget_views": 7
+    },
+    {
+      "notebook": "07_raizes_ondas_fourier.ipynb",
+      "status": "ok",
+      "code_cells": 5,
+      "widget_views": 3
     }
   ]
 }

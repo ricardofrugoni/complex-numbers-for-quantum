@@ -428,9 +428,9 @@ def modulus_surface():
 
 
 def amplitudes():
-    """Amplitudes de qubit normalizadas e probabilidades na base |0>, |1>."""
+    """Amplitudes normalizadas e comparação entre as bases 0/1 e +/−."""
     lab = _lab("Amplitudes complexas e probabilidades",
-               "Varie as fases mantendo as magnitudes; compare os vetores com P(0) e P(1).",
+               "Mude a fase relativa: as barras 0/1 permanecem; as barras +/− podem mudar.",
                [("p0", "Probabilidade P(0)", 0, 1, 0.75, 0.01),
                 ("phase_alpha", "Fase de α (°)", -180, 180, 45, 1),
                 ("phase_beta", "Fase de β (°)", -180, 180, -60, 1)])
@@ -440,12 +440,20 @@ def amplitudes():
     alpha_line = _line(ax, "α", BLUE)
     beta_line = _line(ax, "β", ORANGE, "--", "s")
     ax.legend(loc="upper left", fontsize=8)
-    bars = probs.bar(["P(0) = |α|²", "P(1) = |β|²"], [0.75, 0.25], color=[BLUE, ORANGE])
+    bars = probs.bar([0, 1], [0.75, 0.25], color=[BLUE, ORANGE], width=0.65)
     bars[1].set_hatch("//")
-    labels = [probs.text(i, 0, "", ha="center", va="bottom") for i in range(2)]
-    probs.set(title="Medição na base |0⟩, |1⟩", ylabel="Probabilidade", ylim=(0, 1.15))
+    interference_bars = probs.bar([3, 4], [0, 0], color=[BLUE, ORANGE], width=0.65)
+    interference_bars[1].set_hatch("//")
+    labels = [probs.text(i, 0, "", ha="center", va="bottom", fontsize=9)
+              for i in (0, 1, 3, 4)]
+    probs.axvline(2, color=GRAY, ls=":", lw=1)
+    probs.set(title="Duas escolhas de base de medição", ylabel="Probabilidade", ylim=(0, 1.22),
+              xticks=[0, 1, 3, 4], xticklabels=["P(0)", "P(1)", "P(+)", "P(−)"])
+    probs.text(0.5, 1.13, "Base 0/1", ha="center", color=GRAY, fontsize=9)
+    probs.text(3.5, 1.13, "Base +/−", ha="center", color=GRAY, fontsize=9)
     probs.grid(axis="y", alpha=0.18)
-    lab.artists.update(alpha=alpha_line, beta=beta_line, probabilities=bars)
+    lab.artists.update(alpha=alpha_line, beta=beta_line, probabilities=bars,
+                       interference_probabilities=interference_bars)
 
     def update():
         p0 = lab.sliders["p0"].val
@@ -454,14 +462,140 @@ def amplitudes():
         _complex_line(alpha_line, [0, alpha])
         _complex_line(beta_line, [0, beta])
         probabilities = (abs(alpha)**2, abs(beta)**2)
-        for bar, label, p in zip(bars, labels, probabilities):
+        gamma_plus, gamma_minus = (alpha + beta)/np.sqrt(2), (alpha - beta)/np.sqrt(2)
+        interference = (abs(gamma_plus)**2, abs(gamma_minus)**2)
+        relative_phase = None if alpha == 0 or beta == 0 else np.angle(beta * alpha.conjugate())
+        relative_text = ("indefinida (amplitude nula)" if relative_phase is None
+                         else f"{np.degrees(relative_phase):.1f}°")
+        for bar, label, p in zip((*bars, *interference_bars), labels, (*probabilities, *interference)):
             bar.set_height(p)
             label.set_position((bar.get_x() + bar.get_width()/2, p + 0.02))
             label.set_text(f"{p:.3f}")
         lab.artists["readout"].set_text(
-            f"α = {_fmt(alpha)}    β = {_fmt(beta)}    P(0) + P(1) = {sum(probabilities):.6f}\n"
-            f"arg(α) = {_phase(alpha)}    arg(β) = {_phase(beta)}    Probabilidades nesta base.")
-        lab.values.update(alpha=alpha, beta=beta, probabilities=probabilities)
+            f"arg(α) = {_phase(alpha)}    arg(β) = {_phase(beta)}    Δφ = {relative_text}\n"
+            "P(±) = |(α ± β)/√2|². Cada par soma 1; são escolhas distintas de medição.")
+        lab.values.update(alpha=alpha, beta=beta, probabilities=probabilities,
+                          interference_probabilities=interference, relative_phase=relative_phase)
+
+    return _connect(lab, update)
+
+
+def roots_of_unity():
+    """As n raízes de z**n=1; vértices igualmente espaçados no círculo."""
+    lab = _lab("Raízes da unidade: uma equação, muitas direções",
+               "Mova n: cada vértice elevado a n retorna a 1. A soma dos vértices é zero.",
+               [("n", "Número de raízes n", 2, 16, 5, 1)])
+    ax, result_ax = lab.axes
+    _plane(ax, "Um polígono no círculo unitário", 1.35)
+    _circle(ax)
+    polygon = _line(ax, "Raízes em ordem angular", BLUE, "-", "o")
+    _plane(result_ax, "Todos os pontos wᵏ elevados a n", 1.35)
+    _circle(result_ax)
+    result = _line(result_ax, "Resultado: 1", ORANGE, "", "D")
+    ax.legend(loc="lower left", fontsize=8)
+    result_ax.legend(loc="lower left", fontsize=8)
+    lab.artists.update(polygon=polygon, result=result)
+
+    def update():
+        n = int(lab.sliders["n"].val)
+        roots = np.exp(1j * TAU * np.arange(n) / n)
+        _complex_line(polygon, np.r_[roots, roots[0]])
+        _complex_line(result, roots**n)
+        lab.artists["readout"].set_text(
+            f"wₖ = exp(2πik/{n})    k = 0, …, {n-1}    Separação angular: {360/n:.2f}°\n"
+            f"Máximo |wₖⁿ − 1| = {np.max(abs(roots**n - 1)):.2e}    "
+            f"|Σ wₖ| = {abs(roots.sum()):.2e}    Resíduos de ponto flutuante.")
+        lab.values.update(n=n, roots=roots)
+
+    return _connect(lab, update)
+
+
+def waves():
+    """Uma oscilação real como projeção de A exp(i(omega*t+phi))."""
+    lab = _lab("Uma rotação vista de lado é uma oscilação",
+               "A e φ mudam o fasor; ω controla sua velocidade angular. t é medido em segundos.",
+               [("amplitude", "Amplitude A", 0, 2, 1, 0.05),
+                ("omega", "ω (rad/s)", 0.5, 3, 1, 0.1),
+                ("phase", "Fase φ (°)", -180, 180, 0, 1),
+                ("time", "Instante t (s)", 0, 6, 1, 0.05)])
+    ax, signal_ax = lab.axes
+    _plane(ax, "z(t) e sua projeção real", 2.4)
+    circle = _circle(ax)
+    vector = _line(ax, "z(t)", BLUE)
+    projection = _line(ax, "Re z(t)", ORANGE, "--", "s")
+    signal = _line(signal_ax, "A cos(ωt + φ)", BLUE, "-", "")
+    selected = _line(signal_ax, "Instante selecionado", ORANGE, "", "D")
+    cursor = signal_ax.axvline(0, color=GRAY, ls=":")
+    ax.legend(loc="lower left", fontsize=8)
+    signal_ax.set(title="A parte real ao longo do tempo", xlabel="t (s)",
+                  ylabel="Deslocamento (unidade arbitrária)", xlim=(0, 6), ylim=(-2.4, 2.4))
+    signal_ax.legend(loc="lower left", fontsize=8)
+    signal_ax.grid(alpha=0.18)
+
+    def update():
+        amplitude, omega, phase, time = (lab.sliders[k].val for k in
+                                         ("amplitude", "omega", "phase", "time"))
+        phi = np.radians(phase)
+        t = np.linspace(0, 6, 601)
+        z = amplitude * np.exp(1j * (omega*t + phi))
+        current = amplitude * np.exp(1j * (omega*time + phi))
+        _complex_line(circle, amplitude * np.exp(1j*np.linspace(0, TAU, 241)))
+        _complex_line(vector, [0, current])
+        _complex_line(projection, [current, current.real])
+        signal.set_data(t, z.real)
+        selected.set_data([time], [current.real])
+        cursor.set_xdata([time, time])
+        lab.artists["readout"].set_text(
+            f"z(t) = A exp(i(ωt + φ))    z({time:.2f}) = {_fmt(current)}\n"
+            f"Re z(t) = {current.real:.3f}    Período T = 2π/ω = {TAU/omega:.3f} s"
+            + ("    A=0: sinal nulo; sua fase não é definida." if amplitude == 0 else ""))
+        lab.values.update(t=t, z=z, current=current, period=TAU/omega)
+
+    return _connect(lab, update)
+
+
+def fourier_components():
+    """Síntese de dois cossenos e espectro de amplitudes unilateral via DFT."""
+    lab = _lab("Fourier: uma forma, duas frequências",
+               "Mude a fase da segunda componente: a forma muda, mas seu espectro de amplitudes permanece.",
+               [("amplitude", "Amplitude da 2ª componente", 0, 1.5, 0.5, 0.05),
+                ("harmonic", "Harmônico k", 2, 8, 3, 1),
+                ("phase", "Fase φ (°)", -180, 180, 0, 1)])
+    ax, spectrum_ax = lab.axes
+    first = _line(ax, "cos(t)", GRAY, "--", "")
+    second = _line(ax, "A cos(kt + φ)", ORANGE, ":", "")
+    total = _line(ax, "Soma", BLUE, "-", "")
+    ax.set(title="Síntese no domínio do parâmetro t", xlabel="t (rad)",
+           ylabel="Sinal", xlim=(0, TAU), ylim=(-2.8, 2.8))
+    ax.grid(alpha=0.18)
+    ax.legend(loc="lower left", fontsize=8)
+    bars = spectrum_ax.bar(np.arange(9), np.zeros(9), color=BLUE)
+    spectrum_ax.set(title="Amplitudes dos cossenos", xlabel="Harmônico",
+                    ylabel="Amplitude (espectro unilateral)", ylim=(0, 1.7), xticks=range(9))
+    spectrum_ax.grid(axis="y", alpha=0.18)
+    lab.artists["spectrum"] = bars
+
+    def update():
+        amplitude = lab.sliders["amplitude"].val
+        k = int(lab.sliders["harmonic"].val)
+        phase = np.radians(lab.sliders["phase"].val)
+        t = np.linspace(0, TAU, 512, endpoint=False)
+        a, b = np.cos(t), amplitude*np.cos(k*t + phase)
+        signal = a + b
+        coefficients = np.fft.rfft(signal) / len(signal)
+        magnitudes = 2*abs(coefficients[:9])
+        magnitudes[0] /= 2  # DC não possui um parceiro de frequência negativa.
+        first.set_data(t, a)
+        second.set_data(t, b)
+        total.set_data(t, signal)
+        for bar, magnitude in zip(bars, magnitudes):
+            bar.set_height(magnitude)
+        lab.artists["readout"].set_text(
+            f"s(t) = cos(t) + {amplitude:g} cos({k}t + φ)    φ = {np.degrees(phase):g}°\n"
+            f"Coeficiente complexo c_{k} = {_fmt(coefficients[k])}    "
+            f"|c_{k}| = {abs(coefficients[k]):.3f}    "
+            "Cada cosseno não nulo divide sua amplitude entre ±k.")
+        lab.values.update(t=t, signal=signal, coefficients=coefficients, magnitudes=magnitudes)
 
     return _connect(lab, update)
 
@@ -474,4 +608,7 @@ EXPLORERS = {
     "potencias": powers,
     "modulo3d": modulus_surface,
     "amplitudes": amplitudes,
+    "raizes": roots_of_unity,
+    "ondas": waves,
+    "fourier": fourier_components,
 }

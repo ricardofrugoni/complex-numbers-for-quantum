@@ -1,5 +1,50 @@
 # Auditoria e propostas de melhoria
 
+## Revisão atual: livro visual e explorável
+
+As diretrizes editoriais fornecidas pelo autor substituem a organização anterior por exercícios e autorizam a revisão do README, do plano, dos capítulos e dos notebooks. O objetivo atual está descrito no [plano editorial](../PROJECT_PLAN.md).
+
+Foram reescritos os seis capítulos conceituais, adicionados capítulos sobre raízes da unidade e aplicações, e adaptados os sete notebooks para demonstração e descoberta. O README reúne capa vetorial, cards, animação com alternativa estática, sequência de rotações, ponte quântica e uma trilha de 18 links. As [referências comentadas](REFERENCIAS.md) registram fontes, convenções e limites.
+
+O módulo de interação agora oferece dez laboratórios: os sete anteriores e três novos sobre raízes, ondas e Fourier. Eles usam as dependências já existentes. Os contratos das funções matemáticas de `complex_geometry.py` foram mantidos; a distinção entre argumento numérico e direção indefinida na origem foi incorporada aos textos.
+
+### Validação desta revisão
+
+Conferência final em 11 de setembro de 2026. O painel de amplitudes foi ampliado para comparar as bases 0/1 e +/− no mesmo gráfico. Foram acrescentados a explicação do termo de interferência, exemplos de fase global, testes dessas relações e uma configuração de publicação com Binder. A prévia `amplitudes.png` foi regenerada e inspecionada.
+
+| Verificação | Resultado |
+|---|---|
+| Suíte matemática e de controles | **52 testes passaram**, incluindo raízes, projeções, Fourier, limites dos dez painéis, fase global e interferência na segunda base |
+| Notebooks | **Sete executaram**, com 26 células de código e dez saídas de widgets |
+| Prévia no GitHub | As saídas dos cinco notebooks estáticos foram gravadas; os dois laboratórios continuam dependentes de kernel ativo |
+| Links e estrutura | 20 documentos e 164 links locais, com âncoras, tabelas e formato dos notebooks conferidos por `scripts/validate_book_links.py` |
+| Figuras | SVGs e PNGs do livro e prévias dos novos laboratórios inspecionados visualmente; GIF gerado por código |
+| Navegador e hospedagem | JupyterLab iniciado em loopback e resposta HTTP 200 verificada. A ferramenta de interface não encontrou navegadores conectados, portanto os widgets não foram manipulados no navegador. A validação usa eventos simulados, renderização e kernels reais. Binder preparado, sem construção remota ou deploy |
+
+O [registro de execução](../assets/interactive/notebook-validation.json) guarda versões e resultados por notebook. Na revisão anterior, a primeira execução dos testes encontrou uma asserção com redação diferente da interface e uma falha ao gravar um PNG na pasta temporária do sistema; ambas foram resolvidas. Nesta conferência, os 46 testes iniciais passaram e, após a ampliação das comparações quânticas, os 52 testes passaram usando uma pasta temporária exclusiva dentro do projeto.
+
+Os notebooks atuais possuem identificadores de célula. O aviso antigo de `MissingIDFieldWarning` não apareceu na validação final. O kernel ainda informa o uso de transporte TCP local sem criptografia. O servidor Jupyter de verificação foi limitado a `127.0.0.1`, manteve autenticação e foi encerrado ao terminar a conferência.
+
+### Pendências técnicas que continuam pertinentes
+
+Lockfile, CI, separação entre cálculo e desenho e efetivação da publicação online permanecem decisões futuras. A revisão editorial, os links precisos, as ressalvas de normalização, o bootstrap dos notebooks e a configuração do Binder já foram incorporados. O tratamento aprofundado de portas, QFT e sistemas compostos continua fora da trilha principal.
+
+### Cobertura das diretrizes editoriais 20–33
+
+| Diretrizes | Material que concretiza a proposta |
+|---|---|
+| 20–21, 30 e 33: leitura e descoberta | Plano editorial, navegação entre capítulos, exemplos resolvidos e convites para observar ou comparar nos sete notebooks |
+| 22 e 32: aplicações além de qubits | Capítulo de aplicações e laboratório de raízes, ondas e Fourier, com espiral dinâmica e exemplos de fasores/circuitos |
+| 23: pontes quânticas rigorosas | Janelas nos capítulos e comparação de duas bases; distinções entre amplitude e estado, fase global e relativa, valor arbitrário e probabilidade |
+| 24: curiosidades úteis | Quatro rotações por i, identidade de Euler, reflexão dupla, soma nula das raízes e saltos do argumento principal |
+| 25 e 28: equações com geometria | Plano com projeções, conjugado, grade multiplicada, capa vetorial, cards, rotações e ponte quântica |
+| 26–27 e 29: README visual e breve | Capa, animação com alternativa estática, prévia dos controles, links diretos para notebooks e guia local/Binder |
+| 31: trilha navegável | Percurso de 18 conceitos no README com destinos de seção; capítulos preservam os caminhos existentes |
+
+## Registro histórico da primeira expansão
+
+As seções abaixo descrevem o estado anterior à revisão do livro. Contagens, preservação de arquivos e aprovações pendentes mencionadas nesse registro não representam automaticamente o estado atual; para a entrega vigente, vale a seção acima.
+
 ## Abrangência
 
 Foram examinados o README, o plano, os requisitos, os seis documentos conceituais, todas as células dos cinco notebooks originais, os módulos Python, o gerador de figuras, os cinco testes originais e os arquivos de configuração. As três figuras existentes foram inventariadas. Também foi inspecionado o ambiente `.venv`, sem tratar caches e bibliotecas de terceiros como código do projeto. Não foi encontrado outro `AGENTS.md` local. Na conferência final, o Git estava disponível com o commit inicial `c68b947`; a comparação confirmou que, entre os arquivos preexistentes, somente o README recebeu uma seção adicional de acesso aos laboratórios.

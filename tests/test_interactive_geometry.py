@@ -117,6 +117,32 @@ def test_amplitude_bars_and_zero_phase():
     assert lab.values["alpha"] == 0
     assert [b.get_height() for b in lab.artists["probabilities"]] == pytest.approx([0, 1])
     assert "indefinido" in lab.artists["readout"].get_text()
+    assert lab.values["relative_phase"] is None
+    assert lab.values["interference_probabilities"] == pytest.approx([0.5, 0.5])
+
+
+def test_relative_phase_changes_second_basis_and_global_phase_preserves_both():
+    lab = EXPLORERS["amplitudes"]().set_values(p0=0.5, phase_alpha=0, phase_beta=0)
+    assert lab.values["interference_probabilities"] == pytest.approx([1, 0], abs=1e-14)
+    lab.set_values(phase_beta=180)
+    assert lab.values["probabilities"] == pytest.approx([0.5, 0.5])
+    assert lab.values["interference_probabilities"] == pytest.approx([0, 1], abs=1e-14)
+    assert [b.get_height() for b in lab.artists["interference_probabilities"]] == pytest.approx([0, 1])
+    # Um deslocamento comum de +37° preserva as duas distribuições.
+    lab.set_values(p0=0.75, phase_alpha=-40, phase_beta=65)
+    before = lab.values.copy()
+    lab.set_values(phase_alpha=-3, phase_beta=102)
+    assert lab.values["alpha"] != pytest.approx(before["alpha"])
+    for key in ("probabilities", "interference_probabilities", "relative_phase"):
+        assert lab.values[key] == pytest.approx(before[key])
+
+
+@pytest.mark.parametrize("p", [0, 0.2, 0.5, 0.9, 1])
+def test_second_basis_agrees_with_interference_formula(p):
+    lab = EXPLORERS["amplitudes"]().set_values(p0=p, phase_alpha=30, phase_beta=-90)
+    expected_plus = 0.5 + np.sqrt(p*(1-p))*np.cos(np.radians(-120))
+    assert lab.values["interference_probabilities"] == pytest.approx([expected_plus, 1-expected_plus])
+    assert sum(lab.values["interference_probabilities"]) == pytest.approx(1)
 
 
 def test_slider_mouse_events_change_math_and_reset_button_works():
@@ -158,3 +184,41 @@ def test_all_explorers_render_extremes_without_growing_artists(name, tmp_path):
     output = tmp_path / f"{name}.png"
     lab.fig.savefig(output, dpi=70)
     assert output.stat().st_size > 5000
+
+
+@pytest.mark.parametrize("n", [2, 4, 7, 16])
+def test_roots_are_distinct_unit_solutions_with_zero_sum(n):
+    lab = EXPLORERS["raizes"]().set_values(n=n)
+    roots = lab.values["roots"]
+    assert len(roots) == n
+    assert len(np.unique(np.round(roots, 12))) == n
+    np.testing.assert_allclose(abs(roots), 1, atol=1e-13)
+    np.testing.assert_allclose(roots**n, 1, atol=1e-13)
+    assert abs(roots.sum()) < 1e-13
+    if n == 4:
+        np.testing.assert_allclose(roots, [1, 1j, -1, -1j], atol=1e-13)
+
+
+def test_wave_quarter_turn_period_and_zero_amplitude():
+    lab = EXPLORERS["ondas"]().set_values(amplitude=2, omega=2, phase=90, time=0)
+    assert lab.values["current"] == pytest.approx(2j)
+    assert lab.values["period"] == pytest.approx(np.pi)
+    np.testing.assert_allclose(abs(lab.values["z"]), 2, atol=1e-13)
+    lab.set_values(amplitude=0)
+    np.testing.assert_array_equal(lab.values["z"], 0)
+    assert "não é definida" in lab.artists["readout"].get_text()
+
+
+def test_fourier_phase_changes_signal_but_not_amplitude_spectrum():
+    lab = EXPLORERS["fourier"]().set_values(amplitude=1, harmonic=3, phase=0)
+    before = lab.values["signal"].copy()
+    np.testing.assert_allclose(lab.values["magnitudes"], [0, 1, 0, 1, 0, 0, 0, 0, 0], atol=1e-13)
+    lab.set_values(phase=90)
+    after = lab.values["signal"]
+    assert not np.allclose(before, after)
+    np.testing.assert_allclose(lab.values["magnitudes"], [0, 1, 0, 1, 0, 0, 0, 0, 0], atol=1e-13)
+    assert lab.values["coefficients"][3] == pytest.approx(0.5j)
+    reconstructed = np.fft.irfft(lab.values["coefficients"]*len(after), n=len(after))
+    np.testing.assert_allclose(reconstructed, after, atol=1e-13)
+    lab.set_values(amplitude=0)
+    assert abs(lab.values["coefficients"][3]) < 1e-13
