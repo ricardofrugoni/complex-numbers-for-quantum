@@ -44,8 +44,8 @@
     {
       "notebook": "06_laboratorio_interativo.ipynb",
       "status": "ok",
-      "code_cells": 10,
-      "widget_views": 7
+      "code_cells": 11,
+      "widget_views": 8
     },
     {
       "notebook": "07_raizes_ondas_fourier.ipynb",

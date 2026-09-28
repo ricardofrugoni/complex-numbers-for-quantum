@@ -12,7 +12,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("lab", nargs="?", default="euler3d", choices=[
         "plano", "soma", "multiplicacao", "euler3d", "potencias", "modulo3d", "amplitudes",
-        "raizes", "ondas", "fourier", "todos"])
+        "bloch", "raizes", "ondas", "fourier", "todos"])
     parser.add_argument("--output", type=Path, help="Diretório para PNGs estáticos; não abre janelas.")
     args = parser.parse_args()
     if args.output:

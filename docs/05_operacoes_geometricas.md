@@ -26,7 +26,9 @@ Começamos com $z=1+i$. A conta dá $(1+i)i=i+i^2=-1+i$. O ponto $(1,1)$ chega a
 
 Em geral, $i(a+bi)=-b+ai$: as coordenadas passam de $(a,b)$ para $(-b,a)$, uma rotação anti-horária de $90°$. Veja a [demonstração computacional](../notebooks/03_operacoes_geometricas.ipynb).
 
-![Quatro multiplicações sucessivas por i percorrem 1, i, −1, −i e retornam a 1.](../assets/book/quatro_rotacoes.svg)
+![Um vetor percorre o círculo unitário e pausa por um segundo em cada quadrante, mostrando o ângulo em radianos e o valor complexo.](../assets/book/quatro_rotacoes.gif)
+
+[Ver sem movimento](../assets/book/quatro_rotacoes_poster.png).
 
 > **Uma consequência surpreendente**
 > $i^2=-1$ é meia volta; $i^4=1$ é uma volta completa. A regra algébrica da unidade imaginária ganha uma interpretação espacial.

@@ -35,7 +35,7 @@ def main():
             widget_views = sum("application/vnd.jupyter.widget-view+json" in output.get("data", {})
                                for cell in notebook.cells if cell.cell_type == "code"
                                for output in cell.get("outputs", []))
-            expected = {"06_laboratorio_interativo.ipynb": 7,
+            expected = {"06_laboratorio_interativo.ipynb": 8,
                         "07_raizes_ondas_fourier.ipynb": 3}.get(path.name, 0)
             if widget_views < expected:
                 raise RuntimeError(f"{path.name}: esperadas {expected} saídas interativas; obtidas {widget_views}.")

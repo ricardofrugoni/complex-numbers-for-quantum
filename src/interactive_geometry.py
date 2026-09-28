@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 from matplotlib.collections import LineCollection
 from matplotlib.widgets import Button, Slider
 import numpy as np
+import seaborn as sns
 
 from .complex_geometry import conjugate, from_polar, scale_and_rotate
+from .plot_style import register_montserrat
 
-BLUE = "#0072B2"
-ORANGE = "#D55E00"
-GREEN = "#008060"
-GRAY = "#667085"
+BLUE, ORANGE, GREEN, GRAY = sns.color_palette(
+    ["#8fa8ff", "#f093cd", "#7acddd", "#9aaac5"]).as_hex()
 TAU = 2 * np.pi
 
 
@@ -98,8 +98,15 @@ Os nomes e limites estão disponíveis no dicionário sliders.
 
 
 def _lab(title, subtitle, specs, *, three_d=False):
-    fig = plt.figure(figsize=(12, 8.6), facecolor="white")
-    fig.suptitle(title, fontsize=17, fontweight="bold", x=0.08, ha="left", y=0.975)
+    sns.set_theme(style="whitegrid", context="notebook", palette=[BLUE, ORANGE, GREEN],
+                  rc={"font.family": register_montserrat(), "mathtext.fontset": "stix",
+                      "axes.edgecolor": "#243048", "grid.color": "#243048",
+                      "axes.facecolor": "#080e19", "axes.titlecolor": "#e7edf8",
+                      "axes.labelcolor": "#9aaac5", "text.color": "#e7edf8",
+                      "xtick.color": "#9aaac5", "ytick.color": "#9aaac5",
+                      "axes.spines.top": False, "axes.spines.right": False})
+    fig = plt.figure(figsize=(12, 8.6), facecolor="#080e19")
+    fig.suptitle(title, fontsize=19, fontweight="semibold", x=0.08, ha="left", y=0.975)
     fig.text(0.08, 0.925, subtitle, fontsize=10, color=GRAY)
     grid = fig.add_gridspec(1, 2, left=0.08, right=0.94, bottom=0.40,
                             top=0.85, wspace=0.36)
@@ -111,11 +118,15 @@ def _lab(title, subtitle, specs, *, three_d=False):
     for index, (name, label, low, high, initial, step) in enumerate(specs):
         area = fig.add_axes((0.25, 0.225 - 0.043 * index, 0.56, 0.022))
         lab.sliders[name] = Slider(area, label, low, high, valinit=initial,
-                                   valstep=step, color=BLUE, valfmt="%g")
-    lab.buttons["reset"] = Button(fig.add_axes((0.82, 0.055, 0.13, 0.04)), "Restaurar")
+                                   valstep=step, color=BLUE, track_color="#243048", valfmt="%g")
+        lab.sliders[name].label.set_fontsize(10)
+        lab.sliders[name].valtext.set_color(BLUE)
+    lab.buttons["reset"] = Button(fig.add_axes((0.82, 0.055, 0.13, 0.04)), "Restaurar",
+                                  color="#17253e", hovercolor="#293d60")
     lab.buttons["reset"].on_clicked(lab.reset)
     if three_d:
-        lab.buttons["view"] = Button(fig.add_axes((0.65, 0.055, 0.15, 0.04)), "Restaurar vista")
+        lab.buttons["view"] = Button(fig.add_axes((0.65, 0.055, 0.15, 0.04)), "Restaurar vista",
+                                     color="#17253e", hovercolor="#293d60")
         lab.buttons["view"].on_clicked(lab.reset_view)
         lab.reset_view()
     lab.artists["readout"] = fig.text(0.08, 0.29, "", fontsize=10, linespacing=1.7)
@@ -136,7 +147,7 @@ def _connect(lab, update):
 
 
 def _plane(ax, title, limit):
-    ax.set(title=title, xlabel="Parte real", ylabel="Parte imaginária",
+    ax.set(title=title, xlabel=r"$\operatorname{Re}(z)$", ylabel=r"$\operatorname{Im}(z)$",
            xlim=(-limit, limit), ylim=(-limit, limit))
     ax.set_aspect("equal", adjustable="box")
     ax.axhline(0, color=GRAY, lw=0.7)
@@ -480,6 +491,56 @@ def amplitudes():
     return _connect(lab, update)
 
 
+def bloch_sphere():
+    """Estado puro de um qubit: amplitudes complexas e vetor de Bloch unitário."""
+    lab = _lab("Esfera de Bloch",
+               "Arraste para girar. A fase global preserva o estado.",
+               [("p0", "Probabilidade P(0)", 0, 1, 0.75, 0.01),
+                ("relative_phase", "Fase relativa φ (°)", -180, 180, 60, 1),
+                ("global_phase", "Fase global χ (°)", -180, 180, 0, 1)], three_d=True)
+    ax, plane = lab.axes
+    plane.remove()
+    lab.axes = (ax,)
+    ax.set_position((0.12, 0.34, 0.76, 0.56))
+    u, v = np.meshgrid(np.linspace(0, TAU, 37), np.linspace(0, np.pi, 19))
+    ax.plot_wireframe(np.sin(v)*np.cos(u), np.sin(v)*np.sin(u), np.cos(v),
+                      color=GRAY, alpha=0.18, linewidth=0.6, rstride=2, cstride=3)
+    ax.set(xlim=(-1.2, 1.2), ylim=(-1.2, 1.2), zlim=(-1.2, 1.2),
+           xlabel="x = 2 Re(α*β)", ylabel="y = 2 Im(α*β)",
+           zlabel="z = |α|² − |β|²", title="Vetor de Bloch: comprimento 1")
+    ax.set_box_aspect((1, 1, 1))
+    ax.set_axis_off()
+    for direction in np.eye(3):
+        ax.plot(*np.outer([-1, 1], direction).T, color=GRAY, lw=0.7)
+    ax.text(0, 0, 1.12, "|0⟩")
+    ax.text(0, 0, -1.16, "|1⟩")
+    vector, = ax.plot([], [], [], color=GREEN, lw=3, marker="o")
+    projection, = ax.plot([], [], [], color=ORANGE, ls="--", lw=1.5)
+    phase_arc, = ax.plot([], [], [], color=ORANGE, lw=2)
+    lab.artists.update(bloch=vector)
+
+    def update():
+        p0 = lab.sliders["p0"].val
+        phi = np.radians(lab.sliders["relative_phase"].val)
+        chi = np.radians(lab.sliders["global_phase"].val)
+        alpha, beta = normalized_amplitudes(p0, chi, chi + phi)
+        cross = alpha.conjugate() * beta
+        x, y, z = 2*cross.real, 2*cross.imag, 2*p0 - 1
+        vector.set_data_3d([0, x], [0, y], [0, z])
+        projection.set_data_3d([0, x, x], [0, y, y], [0, 0, z])
+        arc = np.linspace(0, phi, 60) if 0 < p0 < 1 else np.array([])
+        phase_arc.set_data_3d(0.35*np.cos(arc), 0.35*np.sin(arc), np.zeros_like(arc))
+        theta = np.arccos(z)
+        relative = f"{np.degrees(phi):.0f}°" if 0 < p0 < 1 else "indefinida no polo"
+        lab.artists["readout"].set_text(
+            rf"$|\alpha|={abs(alpha):.3f}\quad |\beta|={abs(beta):.3f}\quad \|\mathbf{{r}}\|=1$"
+            rf"     $\varphi$ = {relative}")
+        lab.values.update(alpha=alpha, beta=beta, bloch=np.array([x, y, z]),
+                          theta=theta, relative_phase=phi if 0 < p0 < 1 else None)
+
+    return _connect(lab, update)
+
+
 def roots_of_unity():
     """As n raízes de z**n=1; vértices igualmente espaçados no círculo."""
     lab = _lab("Raízes da unidade: uma equação, muitas direções",
@@ -608,6 +669,7 @@ EXPLORERS = {
     "potencias": powers,
     "modulo3d": modulus_surface,
     "amplitudes": amplitudes,
+    "bloch": bloch_sphere,
     "raizes": roots_of_unity,
     "ondas": waves,
     "fourier": fourier_components,

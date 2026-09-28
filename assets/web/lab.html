@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Explore números complexos e a esfera de Bloch com controles interativos, fórmulas e gráficos 3D.">
+<title>Complexos · laboratório visual</title>
+<style>__STYLE__</style>
+<script type="importmap">__IMPORTMAP__</script>
+<script>window.MathJax={tex:{inlineMath:[['\\(','\\)']]},svg:{fontCache:'global'}};</script>
+<script defer src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
+</head>
+<body>
+<a class="skip" href="#controls">Ir para os controles</a>
+<header><a class="brand" href="#multiplicacao"><span class="brand-mark">i</span> COMPLEXOS <span class="brand-detail">/ laboratório visual</span></a><a class="book-link" href="https://github.com/ricardofrugoni/complex-numbers-for-quantum">Ler o livro ↗</a></header>
+<main>
+<section class="intro"><div><p class="eyebrow">DA GEOMETRIA AO QUBIT</p><h1>A matemática ganha movimento.</h1><p class="lead">Mude uma grandeza. Observe o que se transforma — e o que permanece.</p></div><div class="edition"><span>04</span> experiências<br>um mesmo universo</div></section>
+<nav class="chapters" aria-label="Experiências">
+<a href="#plano" data-mode="plano"><small>01</small> Plano complexo</a>
+<a href="#multiplicacao" data-mode="multiplicacao"><small>02</small> Escala & rotação</a>
+<a href="#euler" data-mode="euler"><small>03</small> Euler em movimento</a>
+<a href="#bloch" data-mode="bloch"><small>04</small> Esfera de Bloch</a>
+</nav>
+<section class="workspace" aria-labelledby="title">
+<aside>
+<p class="eyebrow" id="chapter"></p><h2 id="title"></h2><p id="description"></p>
+<div class="equation" id="formula"></div>
+<div id="controls"></div>
+<div class="actions"><button id="play" type="button">▶ Animar</button><button id="reset" class="secondary" type="button">Restaurar</button></div>
+<p class="hint" id="hint"></p>
+</aside>
+<div class="visual"><div class="plot-heading"><span id="plot-label"></span><span class="live"><i></i> AO VIVO</span></div>
+<div id="plot" role="img" aria-label="Visualização matemática interativa"></div>
+<div id="bloch-scene" role="img" aria-label="Esfera de Bloch em 3D; arraste para girar e use a roda para aproximar" tabindex="0" hidden></div>
+<div class="metrics" id="metrics" aria-live="off"></div>
+<p class="observation" id="observation"></p></div>
+</section>
+<section class="notes"><div><p class="eyebrow">APRENDA EXPERIMENTANDO</p><h3 id="challenge-title"></h3><p id="challenge"></p></div><div><p class="eyebrow">COMO LER A FIGURA</p><p id="interpretation"></p><p>Use Tab para selecionar os controles e as setas do teclado para ajustá-los. A animação começa apenas quando você escolhe.</p></div></section>
+<noscript>Ative JavaScript para usar os controles deste laboratório.</noscript>
+<footer><span>Three.js · Plotly · Montserrat · LaTeX</span><span>Sem kernel Python. Fórmulas via MathJax online.</span><a href="https://unsplash.com/photos/a-night-sky-with-a-few-stars-in-it-bOfCH9TnRg4">Fundo: Jack B / Unsplash ↗</a><a href="https://quantum.cloud.ibm.com/learning/en/courses/general-formulation-of-quantum-information/density-matrices/bloch-sphere">IBM Quantum ↗</a></footer>
+</main>
+<script type="text/plain" id="third-party-licenses">__LICENSES__</script>
+<script>__PLOTLY__</script>
+<script>const LAB_THEME = __THEME__;
+const BLOCH_MODULE = __BLOCH_MODULE__;
+__SCRIPT__</script>
+</body></html>

@@ -1,12 +1,35 @@
 # Laboratório interativo de geometria complexa
 
-Dez experiências combinam controles, gráficos e resultados numéricos. O notebook [Geometria e amplitudes](../notebooks/06_laboratorio_interativo.ipynb) reúne sete laboratórios; [Raízes, ondas e Fourier](../notebooks/07_raizes_ondas_fourier.ipynb) acrescenta três. O módulo [interactive_geometry.py](../src/interactive_geometry.py) permite reutilizar as figuras em outros notebooks.
+Onze experiências combinam controles, gráficos e resultados numéricos. O notebook [Geometria e amplitudes](../notebooks/06_laboratorio_interativo.ipynb) reúne oito laboratórios; [Raízes, ondas e Fourier](../notebooks/07_raizes_ondas_fourier.ipynb) acrescenta três. O módulo [interactive_geometry.py](../src/interactive_geometry.py) permite reutilizar as figuras em outros notebooks.
 
 [Voltar ao livro](../README.md) · [Conhecer as aplicações](09_onde_sao_usados.md)
 
+## Laboratório Plotly no navegador
+
+O arquivo [laboratorio.html](laboratorio.html) oferece quatro experiências independentes de Jupyter: plano complexo, escala e rotação, Euler e esfera de Bloch. Baixe o HTML e abra-o em um navegador moderno com suporte a import maps. Plotly, Three.js, Montserrat e o fundo noturno estão incorporados; a notação LaTeX usa MathJax via CDN e precisa de internet para ser formatada. Os cálculos e controles continuam locais. Ative WebGL 2 para a esfera 3D.
+
+A esfera Three.js ocupa o painel inteiro, sem gráfico lateral: arraste para girar a câmera, use a roda para zoom e **Restaurar** para recuperar a vista. O botão **Animar** varia a fase relativa. O módulo da esfera permanece 1; o controle de fase global preserva sua direção. Os pontos decorativos não representam medições ou partículas. [Three.js — OrbitControls](https://threejs.org/docs/pages/OrbitControls.html).
+
+No README, o círculo de “Quatro passos” mostra o valor complexo e o ângulo em radianos. A animação faz uma volta anti-horária, com pausas de exatamente 1 segundo em π/2, π, 3π/2 e 2π. As imagens e os gráficos usam Montserrat para os textos e notação LaTeX para as expressões matemáticas.
+
+As abas selecionam experiências. Os sliders aceitam mouse e teclado; **Animar** inicia o movimento, **Pausar** o interrompe e **Restaurar** recupera valores e câmera. Não há reprodução automática ao abrir a página. O README apresenta GIFs dessas ideias; eles são prévias, não os controles reais.
+
+Para reconstruir a página após editar `assets/web/`, execute `python scripts/build_web_lab.py`. O gerador usa Plotly, os módulos Three.js locais e a paleta Seaborn. Os onze laboratórios Matplotlib dos notebooks continuam disponíveis com o mesmo tema visual. `python scripts/prepare_fonts.py` reproduz os pesos de Montserrat usados nas figuras a partir da fonte variável local. Consulte os [créditos e licenças](../assets/THIRD_PARTY.md).
+
+### Publicar o laboratório Plotly
+
+1. Envie `docs/laboratorio.html` e as demais alterações ao repositório GitHub.
+2. Em **Settings → Pages**, selecione **Deploy from a branch**, a branch `main` e a pasta `/docs`.
+3. Aguarde o deploy terminar e abra o endereço informado pelo GitHub, acrescentando `/laboratorio.html` ao caminho do projeto.
+4. Confirme o funcionamento dos controles e substitua o link principal do README pelo endereço publicado.
+
+Essa publicação não requer servidor Python, Binder ou serviço pago. Ela não acontece ao gerar o HTML localmente. O visualizador de arquivos do GitHub continua estático; é o GitHub Pages que serve o HTML executável. [GitHub Pages: configurar a origem](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site), [Plotly: exportação HTML](https://plotly.com/python/interactive-html-export/) e [Seaborn: tema visual](https://seaborn.pydata.org/tutorial/aesthetics).
+
 ## Preparação e execução
 
-As dependências estão em [requirements-interactive.txt](../requirements-interactive.txt). Esse arquivo inclui os quatro requisitos originais e acrescenta `ipympl`, responsável por conectar os gráficos Matplotlib à interface do JupyterLab. `ipywidgets`, o suporte de widgets do Jupyter e demais dependências transitivas são resolvidos pelo instalador. Não é necessário instalar Plotly, SciPy, Qiskit, Node.js ou uma biblioteca 3D separada para estes laboratórios. O desenho 3D usa `mplot3d`, já incluído no Matplotlib. [Documentação de backends](https://matplotlib.org/stable/users/explain/figure/backends.html) e [instalação do ipympl](https://matplotlib.org/ipympl/installing.html).
+**Está lendo no GitHub?** Os links da trilha abrem capítulos de texto e as páginas `.ipynb` são prévias estáticas. Nenhum deles inicia um kernel Python. Baixe ou clone o projeto, abra o JupyterLab pelos comandos abaixo e selecione **Run → Run All Cells**. Mantenha o terminal do servidor aberto. Os notebooks 01–05 contêm exemplos estáticos executáveis; os controles estão nos notebooks 06–07. Para disponibilizar a execução pela internet, veja [Publicar com Binder](#publicar-com-binder).
+
+As dependências estão em [requirements-interactive.txt](../requirements-interactive.txt). Esse arquivo inclui os requisitos básicos, Plotly e Seaborn, e acrescenta `ipympl`, responsável por conectar os gráficos Matplotlib à interface do JupyterLab. `ipywidgets` e demais dependências transitivas são resolvidos pelo instalador. Não é necessário instalar SciPy, Qiskit, Node.js ou uma biblioteca 3D separada para executar os notebooks. O desenho 3D dos notebooks usa `mplot3d`; a página HTML usa Plotly. [Documentação de backends](https://matplotlib.org/stable/users/explain/figure/backends.html) e [instalação do ipympl](https://matplotlib.org/ipympl/installing.html).
 
 Na raiz do projeto, em PowerShell, com uma `.venv` criada e o `uv` instalado:
 
@@ -32,6 +55,7 @@ Os controles precisam de um kernel ativo. Uma prévia do notebook em um visualiz
 | Potências | ângulo e expoente inteiro | repetição de pontos e argumento principal versus ângulo acumulado |
 | Módulo ao quadrado em 3D | partes real e imaginária | altura da superfície e curvas de nível |
 | Amplitudes | P(0) e fases de α e β | fase relativa e probabilidades nas bases 0/1 e +/− |
+| Esfera de Bloch | P(0), fase relativa e fase global | vetor 3D unitário, módulos de α e β e invariância por fase global |
 | Raízes da unidade | número inteiro de raízes | simetrias e potências que retornam a 1 |
 | Ondas | amplitude, frequência angular, fase e instante | rotação e projeção real ao longo do tempo |
 | Fourier | amplitude, harmônico e fase | forma do sinal, coeficientes complexos e espectro de amplitudes |
@@ -69,7 +93,7 @@ helix.fig.savefig('assets/minha_helice.png', dpi=160)
 
 `set_values` valida limites, valores finitos e passos antes de modificar os controles. Acesso numérico e controle por código complementam o uso do mouse; as figuras Matplotlib ainda não constituem uma interface plenamente acessível a leitores de tela.
 
-Para exportar as dez prévias estáticas sem abrir janelas:
+Para exportar as onze prévias estáticas sem abrir janelas:
 
 ```powershell
 .venv/Scripts/python.exe scripts/explore_geometry.py todos --output assets/interactive
@@ -103,7 +127,7 @@ O comando sem `--save-static` somente verifica a execução. As saídas dos labo
 
 O README usa SVGs, PNGs e um GIF gerados pelo próprio projeto. O [GitHub renderiza esses formatos e apresenta notebooks de forma estática](https://docs.github.com/en/repositories/working-with-files/using-files/working-with-non-code-files); ele não executa os controles do Matplotlib. Para explorar, o leitor baixa ou clona o repositório, instala os requisitos no ambiente e abre o JupyterLab seguindo os comandos acima.
 
-O link **Explorar números complexos** do README aponta para o notebook real. Não há URL pública de aplicação neste momento. A configuração abaixo prepara uma rota de publicação dos próprios notebooks, com kernel Python e `ipympl`.
+O link **Abrir o laboratório interativo no computador** do README aponta para as instruções de execução; a prévia do notebook está identificada separadamente. Não há URL pública de aplicação neste momento. A configuração abaixo prepara uma rota de publicação dos próprios notebooks, com kernel Python e `ipympl`.
 
 <a id="publicar-com-binder"></a>
 ### Publicar com Binder

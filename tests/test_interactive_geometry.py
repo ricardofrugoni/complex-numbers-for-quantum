@@ -171,6 +171,26 @@ def test_programmatic_control_rejects_invalid_batch_without_partial_update():
         lab.set_values(missing=1)
 
 
+def test_bloch_axes_global_phase_and_poles():
+    lab = EXPLORERS["bloch"]()
+    for p0, phase, expected in [(1, 0, [0, 0, 1]), (0, 0, [0, 0, -1]),
+                                (0.5, 0, [1, 0, 0]), (0.5, 90, [0, 1, 0]),
+                                (0.5, 180, [-1, 0, 0]), (0.5, -90, [0, -1, 0])]:
+        lab.set_values(p0=p0, relative_phase=phase)
+        np.testing.assert_allclose(lab.values["bloch"], expected, atol=1e-14)
+        assert (lab.values["relative_phase"] is None) == (p0 in (0, 1))
+    lab.set_values(p0=0.73, relative_phase=37, global_phase=0)
+    before = lab.values.copy()
+    lab.axes[0].view_init(elev=40, azim=25)
+    lab.set_values(global_phase=73)
+    np.testing.assert_allclose(lab.values["bloch"], before["bloch"], atol=1e-14)
+    assert lab.values["alpha"] != pytest.approx(before["alpha"])
+    assert np.linalg.norm(lab.values["bloch"]) == pytest.approx(1)
+    assert (lab.axes[0].elev, lab.axes[0].azim) == (40, 25)
+    plotted = np.array(lab.artists["bloch"].get_data_3d())[:, -1]
+    np.testing.assert_allclose(plotted, lab.values["bloch"])
+
+
 @pytest.mark.parametrize("name", list(EXPLORERS))
 def test_all_explorers_render_extremes_without_growing_artists(name, tmp_path):
     lab = EXPLORERS[name]()

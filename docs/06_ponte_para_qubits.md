@@ -70,6 +70,10 @@ Compare no laboratório as fases (0°, 90°) com (45°, 135°). As duas setas gi
 
 ## O que essa ponte abre
 
+**[Explore a esfera de Bloch em 3D →](../notebooks/06_laboratorio_interativo.ipynb#bloch)** (execute no JupyterLab). O painel final liga as amplitudes ao vetor real
+$\mathbf r=(2\operatorname{Re}(\alpha^*\beta),2\operatorname{Im}(\alpha^*\beta),|\alpha|^2-|\beta|^2)$.
+Os módulos determinam o ângulo polar; a fase relativa determina o azimute quando as duas amplitudes são não nulas. A fase global gira as amplitudes no plano complexo sem mover o ponto na esfera. Para estes estados puros, $\|\mathbf r\|=1$; o raio não é o módulo de uma amplitude isolada. [IBM Quantum — esfera de Bloch](https://quantum.cloud.ibm.com/learning/en/courses/general-formulation-of-quantum-information/density-matrices/bloch-sphere), conferido com [Preskill, Caltech — operadores densidade](https://www.preskill.caltech.edu/ph219/Ph-CS-219A-Slides-2020/Ph-CS-219A-Lecture-2-Density-Operators.pdf).
+
 Vetores complexos, produto interno, bases e matrizes unitárias explicam como combinar amplitudes rigorosamente. As [raízes da unidade](08_raizes_da_unidade.md) reaparecem na QFT; essa conexão exige ainda sistemas de vários qubits. Aqui reconhecemos os ingredientes, sem tratar a geometria de uma seta como uma descrição completa desses temas.
 
 **[Volte a explorar as amplitudes →](../notebooks/06_laboratorio_interativo.ipynb#amplitudes)** · [Referências comentadas](REFERENCIAS.md)
